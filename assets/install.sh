@@ -49,6 +49,7 @@ echo $smtp_user | tr , \\n > /tmp/passwd
 while IFS=':' read -r _user _pwd; do
   echo $_pwd | saslpasswd2 -p -c -u $maildomain $_user
 done < /tmp/passwd
+rm /tmp/passwd
 chown postfix.sasl /etc/sasldb2
 
 ############
@@ -66,6 +67,8 @@ if [[ -n "$(find /etc/postfix/certs -iname *.crt)" && -n "$(find /etc/postfix/ce
   postconf -P "submission/inet/smtpd_sasl_auth_enable=yes"
   postconf -P "submission/inet/milter_macro_daemon_name=ORIGINATING"
   postconf -P "submission/inet/smtpd_recipient_restrictions=permit_sasl_authenticated,reject_unauth_destination"
+else
+  postconf -e smtpd_use_tls=no
 fi
 
 #############
