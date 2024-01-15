@@ -1,3 +1,8 @@
 #!/bin/bash
 
-docker build -t catatnight/postfix .
+if [ -n "$1" ]
+then
+  docker build -t vectorinfo/postfix:$1 .
+else
+  echo "Usage: $0 <tag>"
+fi
