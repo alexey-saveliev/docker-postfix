@@ -11,10 +11,11 @@ cat > /etc/supervisor/conf.d/supervisord.conf <<EOF
 nodaemon=true
 
 [program:postfix]
-command=/opt/postfix.sh
-
-[program:rsyslog]
-command=/usr/sbin/rsyslogd -n -c3
+process_name=master
+directory=/etc/postfix
+command=/usr/sbin/postfix start-fg
+startsecs=0
+autorestart=true
 EOF
 
 ############
@@ -23,9 +24,9 @@ EOF
 cat >> /opt/postfix.sh <<EOF
 #!/bin/bash
 service postfix start
-tail -f /var/log/mail.log
 EOF
 chmod +x /opt/postfix.sh
+postconf -e maillog_file=/dev/stdout
 postconf -e myhostname=$maildomain
 postconf -F '*/*/chroot = n'
 
@@ -69,6 +70,7 @@ if [[ -n "$(find /etc/postfix/certs -iname *.crt)" && -n "$(find /etc/postfix/ce
   postconf -P "submission/inet/smtpd_recipient_restrictions=permit_sasl_authenticated,reject_unauth_destination"
 else
   postconf -e smtpd_use_tls=no
+  postconf -e smtpd_tls_security_level=none
 fi
 
 #############

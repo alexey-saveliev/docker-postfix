@@ -1,4 +1,4 @@
-From ubuntu:trusty
+From ubuntu:jammy
 LABEL org.opencontainers.image.authors="saveliev@vectorinfo.ru"
 
 # Set noninteractive mode for apt-get
